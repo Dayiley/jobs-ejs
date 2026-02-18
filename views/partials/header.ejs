@@ -1,0 +1,25 @@
+<nav class="navbar navbar-dark bg-dark mb-4">
+    <div class="container">
+      <span class="navbar-brand mb-0 h1">
+        EJS Application
+      </span>
+    </div>
+  </nav>
+  
+  <div class="container">
+  
+  <% if (errors && errors.length) { %>
+    <% errors.forEach((err) => { %>
+      <div class="alert alert-danger">
+        <%= err %>
+      </div>
+    <% }) %>
+  <% } %>
+  
+  <% if (info && info.length) { %>
+    <% info.forEach((msg) => { %>
+      <div class="alert alert-success">
+        <%= msg %>
+      </div>
+    <% }) %>
+  <% } %>

@@ -1,0 +1,40 @@
+{
+  "name": "jobs-ejs",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Dayiley/jobs-ejs.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Dayiley/jobs-ejs/issues"
+  },
+  "homepage": "https://github.com/Dayiley/jobs-ejs#readme",
+  "description": "",
+  "dependencies": {
+    "connect-flash": "^0.1.1",
+    "connect-mongodb-session": "^5.0.0",
+    "dotenv": "^17.3.1",
+    "ejs": "^4.0.1",
+    "eslint": "^10.0.0",
+    "express": "^4.22.1",
+    "express-async-errors": "^3.1.1",
+    "express-session": "^1.19.0",
+    "helmet": "^8.1.0",
+    "host-csrf": "^2.0.0",
+    "mongoose": "^9.2.1",
+    "passport": "^0.7.0",
+    "passport-local": "^1.0.0",
+    "prettier": "^3.8.1",
+    "xss-clean": "^0.1.4"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.11"
+  }
+}
