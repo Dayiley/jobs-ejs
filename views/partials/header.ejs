@@ -1,25 +1,20 @@
-<nav class="navbar navbar-dark bg-dark mb-4">
-    <div class="container">
-      <span class="navbar-brand mb-0 h1">
-        EJS Application
-      </span>
-    </div>
-  </nav>
-  
-  <div class="container">
-  
-  <% if (errors && errors.length) { %>
-    <% errors.forEach((err) => { %>
-      <div class="alert alert-danger">
-        <%= err %>
-      </div>
-    <% }) %>
-  <% } %>
-  
-  <% if (info && info.length) { %>
-    <% info.forEach((msg) => { %>
-      <div class="alert alert-success">
-        <%= msg %>
-      </div>
-    <% }) %>
-  <% } %>
+<h1 class="h3">The Jobs EJS Application</h1>
+
+<% if (user) { %>
+  <div class="d-flex align-items-center justify-content-between mb-3">
+    <p class="mb-0">User <strong><%= user.name %></strong> is logged on.</p>
+    <form method="POST" action="/sessions/logoff">
+      <button class="btn btn-outline-danger btn-sm" type="submit">Logoff</button>
+    </form>
+  </div>
+<% } %>
+
+<% if (errors) { errors.forEach((err) => { %>
+  <div class="alert alert-danger py-2"><%= err %></div>
+<% }) } %>
+
+<% if (info) { info.forEach((msg) => { %>
+  <div class="alert alert-success py-2"><%= msg %></div>
+<% }) } %>
+
+<hr />
