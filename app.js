@@ -8,6 +8,11 @@ const session = require("express-session");
 const MongoDBStore = require("connect-mongodb-session")(session);
 const flash = require("connect-flash");
 
+const passport = require("passport");
+const passportInit = require("./passport/passportInit");
+
+const connectDB = require("./db/connect");
+
 // EJS + form parsing
 app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
@@ -35,19 +40,34 @@ if (app.get("env") === "production") {
   sessionParms.cookie.secure = true;
 }
 
+// 1) Session
 app.use(session(sessionParms));
 
-// Flash depends on session
+// 2) Passport
+passportInit();
+app.use(passport.initialize());
+app.use(passport.session());
+
+// 3) Flash
 app.use(flash());
 
-// Middleware to expose flash messages to all views
-app.use((req, res, next) => {
-  res.locals.info = req.flash("info");
-  res.locals.errors = req.flash("error");
-  next();
+// 4) storeLocals
+app.use(require("./middleware/storeLocals"));
+
+app.get("/debug-user", (req, res) => {
+  res.json({
+    hasUser: !!req.user,
+    user: req.user || null,
+    session: req.session,
+  });
 });
 
-// Routes: secretWord in session
+// 5) Routes
+app.get("/", (req, res) => {
+  res.render("index");
+});
+app.use("/sessions", require("./routes/sessionRoutes"));
+
 app.get("/secretWord", (req, res) => {
   if (!req.session.secretWord) {
     req.session.secretWord = "syzygy";
@@ -70,6 +90,7 @@ app.post("/secretWord", (req, res) => {
     req.session.secretWord = newWord;
     req.flash("info", "The secret word was changed.");
   }
+
   res.redirect("/secretWord");
 });
 
@@ -85,6 +106,15 @@ app.use((err, req, res, next) => {
 
 const port = process.env.PORT || 3000;
 
-app.listen(port, () => {
-  console.log(`Server is listening on port ${port}...`);
-});
+const start = async () => {
+  try {
+    await connectDB(process.env.MONGO_URI);
+    app.listen(port, () => {
+      console.log(`Server is listening on port ${port}...`);
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+start();
