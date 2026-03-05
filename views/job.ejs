@@ -1,0 +1,48 @@
+<%- include("partials/head.ejs") %>
+<%- include("partials/header.ejs") %>
+
+<div class="card shadow-sm mx-auto" style="max-width: 520px;">
+  <div class="card-body">
+    <h2 class="h5 mb-3"><%= job ? "Edit Job" : "Create Job" %></h2>
+
+    <form method="POST" action="<%= job ? `/jobs/update/${job._id}` : '/jobs' %>">
+      <input type="hidden" name="_csrf" value="<%= _csrf %>">
+
+      <div class="mb-2">
+        <label class="form-label">Company</label>
+        <input
+          class="form-control"
+          name="company"
+          value="<%= job?.company || '' %>"
+          required
+        />
+      </div>
+
+      <div class="mb-2">
+        <label class="form-label">Position</label>
+        <input
+          class="form-control"
+          name="position"
+          value="<%= job?.position || '' %>"
+          required
+        />
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Status</label>
+        <select class="form-select" name="status" required>
+          <% const current = job?.status || 'applied'; %>
+          <option value="applied"   <%= current === 'applied' ? 'selected' : '' %>>applied</option>
+          <option value="interview" <%= current === 'interview' ? 'selected' : '' %>>interview</option>
+          <option value="offer"     <%= current === 'offer' ? 'selected' : '' %>>offer</option>
+          <option value="rejected"  <%= current === 'rejected' ? 'selected' : '' %>>rejected</option>
+        </select>
+      </div>
+
+      <button class="btn btn-primary" type="submit"><%= job ? "Update" : "Create" %></button>
+      <a class="btn btn-outline-secondary" href="/jobs">Cancel</a>
+    </form>
+  </div>
+</div>
+
+<%- include("partials/footer.ejs") %>

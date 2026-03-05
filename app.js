@@ -13,11 +13,33 @@ const passportInit = require("./passport/passportInit");
 
 const connectDB = require("./db/connect");
 
-// EJS + form parsing
+const cookieParser = require("cookie-parser");
+const { csrf } = require("host-csrf");
+const auth = require("./middleware/auth");
+
+const helmet = require("helmet");
+const xss = require("xss-clean");
+const rateLimit = require("express-rate-limit");
+
+
+// 1) EJS + body parser 
 app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
 
-// Mongo session store
+// 2) cookie-parser 
+app.use(cookieParser(process.env.SESSION_SECRET));
+
+// 3) CSRF middleware 
+app.use(
+  csrf({
+    cookie: {
+      sameSite: "strict",
+      secure: false, 
+    },
+  })
+);
+
+// 4) Session
 const store = new MongoDBStore({
   uri: process.env.MONGO_URI,
   collection: "mySessions",
@@ -40,40 +62,42 @@ if (app.get("env") === "production") {
   sessionParms.cookie.secure = true;
 }
 
-// 1) Session
 app.use(session(sessionParms));
 
-// 2) Passport
+// 5) Passport
 passportInit();
 app.use(passport.initialize());
 app.use(passport.session());
 
-// 3) Flash
+// 6) Flash
 app.use(flash());
 
-// 4) storeLocals
+// 7) storeLocals
 app.use(require("./middleware/storeLocals"));
 
-app.get("/debug-user", (req, res) => {
-  res.json({
-    hasUser: !!req.user,
-    user: req.user || null,
-    session: req.session,
-  });
+app.use(helmet());
+app.use(xss());
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
 });
 
-// 5) Routes
+app.use(limiter);
+
+// ===== ROUTES =====
 app.get("/", (req, res) => {
   res.render("index");
 });
-app.use("/sessions", require("./routes/sessionRoutes"));
+
+app.use("/sessions", require("./routes/sessionRoutes.js"));
 
 app.get("/secretWord", (req, res) => {
-  if (!req.session.secretWord) {
-    req.session.secretWord = "syzygy";
-  }
+  if (!req.session.secretWord) req.session.secretWord = "syzygy";
   res.render("secretWord", { secretWord: req.session.secretWord });
 });
+
+app.use("/jobs", auth, require("./routes/jobs"));
 
 app.post("/secretWord", (req, res) => {
   const newWord = (req.body.secretWord || "").trim();
@@ -91,7 +115,10 @@ app.post("/secretWord", (req, res) => {
     req.flash("info", "The secret word was changed.");
   }
 
-  res.redirect("/secretWord");
+  req.session.save((err) => {
+    if (err) return next(err);
+    res.redirect("/secretWord");
+  });
 });
 
 // 404 + error
@@ -100,21 +127,15 @@ app.use((req, res) => {
 });
 
 app.use((err, req, res, next) => {
-  res.status(500).send(err.message);
   console.log(err);
+  res.status(500).send(err.message);
 });
 
 const port = process.env.PORT || 3000;
 
 const start = async () => {
-  try {
-    await connectDB(process.env.MONGO_URI);
-    app.listen(port, () => {
-      console.log(`Server is listening on port ${port}...`);
-    });
-  } catch (error) {
-    console.log(error);
-  }
+  await connectDB(process.env.MONGO_URI);
+  app.listen(port, () => console.log(`Server is listening on port ${port}...`));
 };
 
 start();
