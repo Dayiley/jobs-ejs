@@ -4,6 +4,7 @@
   <div class="d-flex align-items-center justify-content-between mb-3">
     <p class="mb-0">User <strong><%= user.name %></strong> is logged on.</p>
     <form method="POST" action="/sessions/logoff">
+      <input type="hidden" name="_csrf" value="<%= _csrf %>">
       <button class="btn btn-outline-danger btn-sm" type="submit">Logoff</button>
     </form>
   </div>
