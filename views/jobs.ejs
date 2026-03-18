@@ -1,0 +1,49 @@
+<%- include("partials/head.ejs") %>
+<%- include("partials/header.ejs") %>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h2 class="h4 mb-0">Jobs List</h2>
+  <a class="btn btn-primary btn-sm" href="/jobs/new">Add Job</a>
+</div>
+
+<% if (!jobs || jobs.length === 0) { %>
+  <div class="alert alert-secondary">No jobs yet.</div>
+<% } else { %>
+  <div class="table-responsive">
+    <table class="table table-sm table-striped align-middle">
+      <thead>
+        <tr>
+          <th>Company</th>
+          <th>Position</th>
+          <th>Status</th>
+          <th class="text-end"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% jobs.forEach((job) => { %>
+          <tr>
+            <td><%= job.company %></td>
+            <td><%= job.position %></td>
+            <td><%= job.status %></td>
+            <td class="text-end">
+              <a class="btn btn-outline-primary btn-sm" href="/jobs/edit/<%= job._id %>">Edit</a>
+
+              <form method="POST" action="/jobs/delete/<%= job._id %>" class="d-inline">
+                <input type="hidden" name="_csrf" value="<%= _csrf %>">
+                <button
+                  class="btn btn-outline-danger btn-sm"
+                  type="submit"
+                  onclick="return confirm('Delete this job?');"
+                >
+                  Delete
+                </button>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
+<% } %>
+
+<%- include("partials/footer.ejs") %>
