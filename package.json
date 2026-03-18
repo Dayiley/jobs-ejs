@@ -4,7 +4,8 @@
   "main": "app.js",
   "scripts": {
     "start": "node app.js",
-    "dev": "nodemon app.js"
+    "dev": "nodemon app.js",
+    "test": "NODE_ENV=test mocha tests/*.js --timeout 5000 --exit"
   },
   "repository": {
     "type": "git",
@@ -27,7 +28,7 @@
     "eslint": "^10.0.0",
     "express": "^4.22.1",
     "express-async-errors": "^3.1.1",
-    "express-rate-limit": "^8.2.1",
+    "express-rate-limit": "^8.3.1",
     "express-session": "^1.19.0",
     "helmet": "^8.1.0",
     "host-csrf": "^2.0.0",
@@ -38,6 +39,12 @@
     "xss-clean": "^0.1.4"
   },
   "devDependencies": {
-    "nodemon": "^3.1.11"
+    "@faker-js/faker": "^10.3.0",
+    "chai": "^6.2.2",
+    "chai-http": "^5.1.2",
+    "factory-bot": "^6.3.1",
+    "mocha": "^11.7.5",
+    "nodemon": "^3.1.11",
+    "puppeteer": "^24.39.1"
   }
 }
